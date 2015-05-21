@@ -1,15 +1,30 @@
-## Put comments here that give an overall description of what your
-## functions do
+## For programming assignment 2 of the R programming course at Coursera,
+## create a matrix object that caches its inverse
 
-## Write a short comment describing this function
+if (!require("digest")) install.packages("digest")
+
+## Create the caching matrix object
 
 makeCacheMatrix <- function(x = matrix()) {
-
+  assign("hash", c(digest(x), NULL), env = mcache)
+  assign("inverse", NULL, env = mcache)
+  x
 }
 
 
-## Write a short comment describing this function
+## If the inverse of the matrix exists in the cache, return that, else compute the inverse and cache and return it
 
 cacheSolve <- function(x, ...) {
         ## Return a matrix that is the inverse of 'x'
+    if(digest(x) == get("hash", envir = mcache)) {
+        inv <- get("inverse", envir = mcache)
+        if(is.null(inv)) {
+            inv <- solve(x)
+            assign("inverse", inv, env = mcache)
+        }
+        inv
+    } else {
+      x <- makeCacheMatrix(x)
+      cacheSolve(x)
+    }
 }
